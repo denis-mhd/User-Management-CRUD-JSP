@@ -15,16 +15,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.user.management.dao.UserDaoImpl;
+import com.user.management.model.binding.UserBindingModel;
 import com.user.management.model.entity.User;
+import com.user.management.model.service.UserServiceModel;
+import com.user.management.service.UserService;
+import com.user.management.service.UserServiceImpl;
+import com.user.management.util.mapper.Mapper;
 
 @WebServlet("/")
 public class UserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserDaoImpl userDao;
+	private UserService userService;
+	private Mapper mapper; 
 
 	
 	public void init() {
 		userDao = new UserDaoImpl();
+		mapper = new Mapper();
+		userService = new UserServiceImpl(userDao, mapper);
 	}
 
 
@@ -80,15 +89,15 @@ public class UserServlet extends HttpServlet {
 		LocalDate dateOfBirth = LocalDate.parse(req.getParameter("dateOfBirth"));
 		int phoneNumber = Integer.parseInt(req.getParameter("phoneNumber"));
 		String emailAddress = req.getParameter("emailAddress");
-		User newUser = new User(firstName, lastName, dateOfBirth, phoneNumber, emailAddress);
-		userDao.insertUser(newUser);
+		UserBindingModel newUser = new UserBindingModel(firstName, lastName, dateOfBirth, phoneNumber, emailAddress);
+		userService.insert(this.mapper.map(newUser, UserServiceModel.class));
 		res.sendRedirect("list");
 	}
 	
 	private void showEditForm(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, ServletException, IOException {
 		int id = Integer.parseInt(request.getParameter("id"));
-		User existingUser = userDao.selectUser(id);
+		UserBindingModel existingUser = this.userService.select(id);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("user-form.jsp");
 		request.setAttribute("user", existingUser);
 		dispatcher.forward(request, response);
@@ -97,7 +106,7 @@ public class UserServlet extends HttpServlet {
 	
 	private void listUser(HttpServletRequest request, HttpServletResponse response)
 			throws SQLException, IOException, ServletException {
-		List<User> listUsers = userDao.getAll();
+		List<UserBindingModel> listUsers = this.userService.getAll();
 		request.setAttribute("listUser", listUsers);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("user-list.jsp");
 		dispatcher.forward(request, response);
@@ -113,25 +122,27 @@ public class UserServlet extends HttpServlet {
 		String phoneNumber1 = req.getParameter("phoneNumber");
 		int phoneNumber = Integer.parseInt(phoneNumber1);
 		String emailAddress = req.getParameter("emailAddress");
-		User user = new User(id, firstName, lastName, dateOfBirth, phoneNumber, emailAddress);
-		userDao.updateUser(user);
+		UserBindingModel user = new UserBindingModel(id, firstName, lastName, dateOfBirth, phoneNumber, emailAddress);
+		userService.update(this.mapper.map(user, UserServiceModel.class));
 		res.sendRedirect("list");
 	}
 
 	private void deleteUser(HttpServletRequest req, HttpServletResponse res) 
 			throws SQLException, IOException {
 		long id = Long.parseLong(req.getParameter("id"));
-		userDao.deleteUser(id);
+		this.userService.delete(id);
 		res.sendRedirect("list");
 	}
 	
 	private void searchUser(HttpServletRequest req, HttpServletResponse res) 
-			throws SQLException, IOException {
+			throws SQLException, IOException, ServletException {
 		String name = req.getParameter("q");
-		List<User> users = userDao.findUser(name);
-		req.setAttribute("listUser", users);
-		res.sendRedirect("list");
+		List<UserBindingModel> listUsers = userService.find(name);
+		req.setAttribute("listUser", listUsers);
+		RequestDispatcher dispatcher = req.getRequestDispatcher("user-list.jsp");
+		dispatcher.forward(req, res);
 	}
+	
 	
 
 }

@@ -3,6 +3,7 @@ package com.user.management.model.binding;
 import java.time.LocalDate;
 
 public class UserBindingModel {
+	
 		private long id;
 		private String firstName;
 		private String lastName;
@@ -10,7 +11,8 @@ public class UserBindingModel {
 		private int phoneNumber;
 		private String emailAddress;
 		
-		
+		public UserBindingModel() {
+		}
 		
 		public UserBindingModel(String firstName, String lastName, LocalDate dateOfBirth, int phoneNumber, String emailAddress) {
 			this.firstName = firstName;

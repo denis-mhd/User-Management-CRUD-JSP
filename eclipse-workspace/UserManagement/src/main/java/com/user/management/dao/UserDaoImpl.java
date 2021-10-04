@@ -109,7 +109,7 @@ public class UserDaoImpl implements UserDao{
 	
 			transaction = session.beginTransaction();
 			
-			users = session.createQuery("from User where first_name like '%"+name+"%'").getResultList();
+			users = session.createQuery("from User where first_name = :name").setParameter("name", name).getResultList();
 			
 			transaction.commit();
 		} catch (Exception e) {

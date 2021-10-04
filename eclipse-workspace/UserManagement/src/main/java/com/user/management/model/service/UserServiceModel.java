@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 
 public class UserServiceModel {
+		
 		private long id;
 		private String firstName;
 		private String lastName;
@@ -11,6 +12,8 @@ public class UserServiceModel {
 		private int phoneNumber;
 		private String emailAddress;
 	
+		public UserServiceModel() {
+		}
 		
 		public UserServiceModel(String firstName, String lastName, LocalDate dateOfBirth, int phoneNumber, String emailAddress) {
 			this.firstName = firstName;
@@ -19,6 +22,8 @@ public class UserServiceModel {
 			this.phoneNumber = phoneNumber;
 			this.emailAddress = emailAddress;
 		}
+		
+		
 		public UserServiceModel(long id, String firstName, String lastName, LocalDate dateOfBirth, int phoneNumber, String emailAddress) {
 			this.id = id;
 			this.firstName = firstName;
@@ -27,6 +32,8 @@ public class UserServiceModel {
 			this.phoneNumber = phoneNumber;
 			this.emailAddress = emailAddress;
 		}
+		
+		
 		public long getId() {
 			return id;
 		}
